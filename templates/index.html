@@ -1,23 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hand Drawing App</title>
-    <style>
-        body {
-            text-align: center;
-            background-color: #222;
-            color: white;
-        }
-        img {
-            border: 3px solid white;
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
     <h1>Hand Drawing App</h1>
-    <img src="{{ url_for('video_feed') }}" width="640" height="480">
+    <label for="cameraSelect">Select Camera:</label>
+    <select id="cameraSelect"></select>
+    <button onclick="changeCamera()">Switch Camera</button>
+    
+    <img id="videoFeed" src="{{ url_for('video_feed', cam_index=0) }}" width="640" height="480">
+
+    <script>
+        async function getCameras() {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(device => device.kind === "videoinput");
+            const select = document.getElementById("cameraSelect");
+
+            videoDevices.forEach((device, index) => {
+                let option = document.createElement("option");
+                option.value = index;
+                option.text = device.label || `Camera ${index}`;
+                select.appendChild(option);
+            });
+        }
+
+        function changeCamera() {
+            const selectedCamera = document.getElementById("cameraSelect").value;
+            document.getElementById("videoFeed").src = `/video_feed?cam_index=${selectedCamera}`;
+        }
+
+        getCameras();
+    </script>
 </body>
 </html>
