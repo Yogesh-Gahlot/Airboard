@@ -9,7 +9,7 @@ app = Flask(__name__)
 mp_draw = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
 
-video = cv.VideoCapture(-1)
+video = cv.VideoCapture(1)
 canvas = None
 color = (0, 255, 0)  # Default: Green(BGR)
 thickness = 5
