@@ -14,26 +14,10 @@
             border: 3px solid white;
             margin-top: 20px;
         }
-        .error-message {
-            display: none;
-            color: red;
-            font-size: 20px;
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
     <h1>Hand Drawing App</h1>
-    <img id="videoFeed" src="{{ url_for('video_feed') }}" width="640" height="480" onerror="showError()">
-    <div class="error-message" id="errorMessage">
-        ⚠️ Camera not available. Please check your device settings or try again later.
-    </div>
-
-    <script>
-        function showError() {
-            document.getElementById("videoFeed").style.display = "none";
-            document.getElementById("errorMessage").style.display = "block";
-        }
-    </script>
+    <img src="{{ url_for('video_feed') }}" width="640" height="480">
 </body>
 </html>
