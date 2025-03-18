@@ -10,7 +10,7 @@
             background-color: #222;
             color: white;
         }
-        img {
+        video, canvas {
             border: 3px solid white;
             margin-top: 20px;
         }
@@ -18,6 +18,49 @@
 </head>
 <body>
     <h1>Hand Drawing App</h1>
-    <img src="{{ url_for('video_feed') }}" width="640" height="480">
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Access user's camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(err => {
+                console.error("Camera access denied!", err);
+            });
+
+        // Send frames to Flask for processing
+        function sendFrame() {
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            let frame = canvas.toDataURL('image/jpeg');
+
+            fetch('/process_frame', {
+                method: 'POST',
+                body: JSON.stringify({ image: frame }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                let url = URL.createObjectURL(blob);
+                let img = new Image();
+                img.src = url;
+                img.onload = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                };
+            });
+
+            requestAnimationFrame(sendFrame);
+        }
+
+        video.addEventListener('play', sendFrame);
+    </script>
 </body>
 </html>
